@@ -9,9 +9,12 @@ form.addEventListener('submit', async (e) => {
         const response = await axios.post("/user/login",{
             email: email.value,
             password: password.value
-        })
+        });
+
+        localStorage.setItem("token", response.data.token);
         alert("login req send");
         console.log(response);
+        window.location.href = "../home/home.html"
     } catch (error) {
         console.log(error)
     }
