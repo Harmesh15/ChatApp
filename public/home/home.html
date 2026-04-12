@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Chat App</title>
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="/home/home.css">
 </head>
 <body>
     <div class="app-container">
@@ -21,7 +21,6 @@
                     </div>
                 </div>
 
-
                 <div class="user-card active">
                     <div class="avatar"></div>
                     <div class="user-info">
@@ -29,7 +28,6 @@
                         <p>hello?</p>
                     </div>
                 </div>
-
 
                 <div class="user-card active">
                     <div class="avatar"></div>
@@ -51,12 +49,12 @@
 
             <div class="message-area" id="messageArea">
                 <div class="message sent">
-                    <p>Bhai project kaisa chal raha hai?</p>
-                    <span class="timestamp">10:05 PM</span>
+                    <p></p>
+                    <span class="timestamp"></span>
                 </div>
                 <div class="message received">
-                    <p>Mast! CSS likh raha hoon abhi.</p>
-                    <span class="timestamp">10:06 PM</span>
+                    <p></p>
+                    <span class="timestamp"></span>
                 </div>
             </div>
 
@@ -68,6 +66,7 @@
     </div>
 
      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-     <script src="./home.js"></script>
+     <script src="/socket.io/socket.io.js"></script>
+     <script src="/home/home.js"></script>
 </body>
 </html>

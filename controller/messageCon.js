@@ -6,13 +6,13 @@ const messages = require("../models/messages");
        try{
         const {message} = req.body;
         
-        console.log(req.params.userId);
+        console.log(req.user.userId,);
          const response = await messages.create({
             message:message,
             userId:req.user.userId,
           
          })
-         console.log(response);
+        res.status(200).json({success:true,response});
        }catch(error){
         console.log(error);
        }
@@ -20,19 +20,18 @@ const messages = require("../models/messages");
 
 
 // load Messages;
- 
+  
 async function loadmessage (req,res){
     console.log("message  load api hit");
-
      try{
-        const fetchmessages = await messages.findAll(
+        const response = await messages.findAll(
        {
         attributes:['message','userId','createdAt'],
         order: [['createdAt',"ASC"]]
        }
     );
 
-    res.status(200).json({success:true,fetchmessages});
+    res.status(200).json({success:true,response});
      }catch(error){
         console.log(error)
         res.status(500).json({success:false,message:"massage load ni ho paye"})

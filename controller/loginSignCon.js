@@ -43,14 +43,12 @@ const loginuser = async (req,res)=>{
   if(!user){
     return res.status(404).json({message:"user not found"});
   }
-
+  
    const isMatched =  await bcrypt.compare(password, user.password);
    if(!isMatched) return res.status(404).json({message:"invalid user"})
 
-
    const token = jwt.sign({userId: user.id}, "secretkey",{ expiresIn: "1h" });
-   
-
+  
   return res.status(200).json({message:"login successfully",token});
   console.log("Login Successfully");
 

@@ -1,19 +1,50 @@
 const express = require("express");
-const app = express();
+const http = require("http");
+const {Server} = require('socket.io');
 const sequelize = require("./utils/db-connection"); 
 const path = require("path");
-const userRouter = require("./routes/loginSignupRot");
-const messageRoute = require("./routes/messagesRot");
 const cors = require("cors");
 
+const userRouter = require("./routes/loginSignupRot");
+const messageRoute = require("./routes/messagesRot");
 
+
+const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server); 
+
+// ================== MIDDLEWARE ==================
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+ 
+ // ================== SOCKET ==================
+ io.on('connection',(socket)=>{
+    socket.on("send_message",(messages)=>{
+        io.emit("message",messages)
+        console.log("A new user message",messages);
+    });
+    console.log("connectedd");
+ });
+
+
+
+//   socket.on('send_message', (data) => {
+//      console.log("SOCKET HIT 🔥", data);
+//      io.emit('receive_message from client', data.response); // send to all
+//  });
+
+//     socket.on('disconnect',()=>{
+//         console.log("User disconnected",socket.id);
+//     });
+//  });
+
+// ================== ROUTES ==================
 app.get("/",(req,res)=>{
-    res.send("server is running")
+    res.sendFile(path.join(__dirname, 'public/home/home.html'));
 })
 
 app.get('/login', (req, res) => {
@@ -24,20 +55,28 @@ app.get("/signup",(req,res)=>{
     res.sendFile(path.join(__dirname, 'public/signup/signup.html'))
 })
 
-
-// app.get("/home",(req,res)=>{
-//     res.sendFile(path.join(__dirname, 'public/home/home.html'))
-// })
-
 app.use("/user",userRouter);
 app.use("/message",messageRoute);
 
+
+
+
+
+// ================== SERVER START ==================
 const PORT = 8000;
-sequelize.sync({alter:true})
-.then(()=>{
+
+sequelize.sync({ alter: true })
+.then(() => {
     console.log("DB synced");
-    app.listen(PORT,()=>{
- console.log(`server is running on Port no ${PORT}`);
+
+    server.listen(PORT, () => {
+        console.log(`server is running on Port no ${PORT}`);
+    });
 })
-})
+.catch(err => {
+    console.log("DB error:", err);
+});
+
+
+
 
