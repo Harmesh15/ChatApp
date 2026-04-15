@@ -2,7 +2,11 @@ const msgInput = document.querySelector('#msgInput');
 const sendBtn = document.querySelector('.send-btn');
 const receivemsg = document.getElementsByClassName("message received");
 const sendmsg = document.getElementsByClassName("message send");
-const socket = io();
+const socket = io("ws://localhost:8000",{
+    auth:{
+        token:localStorage.getItem("token")
+    }
+});
 
 
 socket.on("message", (message) => {
@@ -16,6 +20,10 @@ socket.on("message", (message) => {
 //     });
 //    msgInput.innerHTML = " ";
 // });
+
+
+
+
 
 sendBtn.addEventListener("click", async (e)=>{
     e.preventDefault();
