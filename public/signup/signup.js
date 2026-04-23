@@ -13,14 +13,13 @@ form.addEventListener("submit", async (e)=>
         username: username.value,
         email:email.value,
         phone:phone.value,
-        password:password.value }
+        password:password.value 
+    }
 
     const response = await axios.post("/user/signup",obj);
     console.log(response);   
     }catch(error){
         console.log(error);
     }
-
-    
 })
 

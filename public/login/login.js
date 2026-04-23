@@ -10,8 +10,9 @@
                 email: email.value,
                 password: password.value
             });
-
+            console.log("response after login",response);
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("userId",response.data.userId);
             alert("login req send");
             console.log(response);
             window.location.href = "/home/home.html"
