@@ -44,11 +44,12 @@ body {
     gap: 15px;
     cursor: pointer;
     transition: 0.3s;
+    
 }
 
 .user-card:hover, .user-card.active { background: rgba(255, 255, 255, 0.1); }
 
-.avatar {
+.profileUser {
     width: 45px;
     height: 45px;
     background: #6c5ce7; /* Indigo color */

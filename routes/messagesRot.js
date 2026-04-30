@@ -7,6 +7,9 @@ const verifyToken = require("../middleware/authe");
 console.log("message route hit");
 router.post("/newmessage",verifyToken,messageCon.messageReceive);
 router.get("/loadmessage",messageCon.loadmessage);
+router.get("/loadusers",messageCon.loadUsers);
+router.get("/find",messageCon.searchUser)
+
 console.log("message route done");
 
 

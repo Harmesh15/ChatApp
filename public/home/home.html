@@ -1,42 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Chat App</title>
     <link rel="stylesheet" href="/home/home.css">
 </head>
+
 <body>
     <div class="app-container">
         <aside class="sidebar">
             <div class="sidebar-header">
+                <form id="searchForm">
+                    <input type="text" id="new_message" placeholder="Enter email">
+                    <button type="submit">OK</button>
+                </form>
                 <h2>Chats</h2>
+
             </div>
-            <div class="user-list">
-                <div class="user-card active">
-                    <div class="avatar"></div>
-                    <div class="user-info">
-                        <h4>Aman</h4>
-                        <p>Kahan ho bhai?</p>
-                    </div>
-                </div>
 
-                <div class="user-card active">
-                    <div class="avatar"></div>
-                    <div class="user-info">
-                        <h4>Ankush Yadav</h4>
-                        <p>hello?</p>
-                    </div>
-                </div>
+            <ul class="user-list">
 
-                <div class="user-card active">
-                    <div class="avatar"></div>
-                    <div class="user-info">
-                        <h4>Sushant</h4>
-                        <p>nikal vaha se?</p>
-                    </div>
-                </div>
-                </div>
+            </ul>
+
         </aside>
 
         <main class="chat-window">
@@ -48,14 +35,6 @@
             </header>
 
             <div class="message-area" id="messageArea">
-                <!-- <div class="message sent">
-                    <p></p>
-                    <span class="timestamp"></span>
-                </div>
-                <div class="message received">
-                    <p></p>
-                    <span class="timestamp"></span>
-                </div> -->
             </div>
 
             <footer class="input-area">
@@ -65,8 +44,9 @@
         </main>
     </div>
 
-     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-     <script src="/socket.io/socket.io.js"></script>
-     <script src="/home/home.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/home/home.js"></script>
 </body>
+
 </html>

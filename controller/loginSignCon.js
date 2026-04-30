@@ -1,6 +1,7 @@
 const chatusers = require("../models/chatusers");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { messages } = require("../models");
 
 const signupcheck = async (req, res) => {
   console.log("signup api hit");
@@ -31,11 +32,8 @@ const signupcheck = async (req, res) => {
 
 const loginuser = async (req, res) => {
   console.log("Login Api hit")
-
-  try {
-
-    const { password, email } = req.body;
-
+    try{
+     const { password, email } = req.body;
        if (!email || !password) {
        return res.status(400).json({ message: "All field required" });
     }
@@ -54,9 +52,8 @@ const loginuser = async (req, res) => {
 
     const token = jwt.sign({ userId: user.id }, "secretkey", { expiresIn: "1h" });
     const userId = user.id;
-  
-  
-    return res.status(200).json({ message: "login successfully", token,userId});
+    
+    return res.status(200).json({ message: "login successfully", token,userId,email:user.email});
 
   } catch (error) {
     console.log(error);
@@ -64,4 +61,5 @@ const loginuser = async (req, res) => {
   }
 }
 
-module.exports = { signupcheck, loginuser }
+
+module.exports = { signupcheck, loginuser};

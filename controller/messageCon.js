@@ -27,7 +27,6 @@ const loadmessage = async (req, res) => {
 
 
 
-
  async function messageReceive (req,res){
 
     console.log("message receive con hit");
@@ -36,14 +35,44 @@ const loadmessage = async (req, res) => {
 
          const response = await messages.create({
             message:message,
-            userId: req.user.id
-          
+            userId: req.user.id,      
          })
         res.status(200).json({success:true,response});
        }catch(error){
         console.log(error);
        }
 }
+
+
+const loadUsers = async (req,res)=>{
+  try{
+    console.log("loaduser api hit");
+    const response = await chatusers.findAll();
+
+    res.status(200).json({message:"all users",response});
+
+  }catch(error){
+    res.status(400).json({message:"Something got wrong",error});
+    console.log(error)
+  }
+}
+
+
+
+const searchUser = async (req,res)=>{
+  try{
+    const user = await chatusers.findOne({ where: { email: req.query.email } });
+     
+    if (!user) {
+   return res.status(404).json({ message: "User not found" });
+}
+
+    res.json(user);
+        }catch(error){
+          console.log(error);
+        res.status(400).json({message:"something is wrong"});
+    }
+  }
 
 
 // load Messages;
@@ -99,5 +128,7 @@ const loadmessage = async (req, res) => {
 
 module.exports = {
     messageReceive,
-    loadmessage
+    loadmessage,
+    loadUsers,
+    searchUser
 }

@@ -5,7 +5,7 @@ const sequelize = require("./utils/db-connection");
 const path = require("path");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-// const chatusers = require("./models/chatusers");
+// const chatusers = require("./models/chatusers");s  
 
 
 const socketIo = require("./socket_io/index")
@@ -22,69 +22,11 @@ const server = http.createServer(app);
 socketIo(server);
 
 
-// const io = new Server(server, {
-//   cors: {
-//     origin: "*"
-//   }
-// });
-
-
 // ================== MIDDLEWARE ==================
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
-
-
-// after socket///////////////////
-
-// io.use( async (socket, next) => {
-//   console.log("middlw ware backend run")
-//   try{
-//         const token = socket.handshake.auth.token;
-
-//         if(!token){
-//          return next(new Error("Token is missing"));
-//       }
-//     const decode = jwt.verify(token, "secretkey"); 
-//     const user = await chatusers.findByPk(decode.userId);
-//     console.log("USER:", user);
-//     console.log("this is user for username",user)
-
-//       if(!user){
-//          return next( new Error("user not found"));
-//       }
-//       socket.user = user;
-//       next();
-//    }catch(error){
-//     console.log("SOCKET ERROR:", error);
-//          return next( new Error("Internal server error"));
-//   }
-// });
-
-
-
-
-
-
-
-
-
-
-
- // ================== SOCKET ================== AUth============
-
-//  io.on('connection',(socket)=>{
-//     console.log("A new user message",socket.id);
-
-//     socket.on("send_message",(messages)=>{
-//         console.log("message",messages);
-
-//        io.emit("receive_message",messages)
-//     });
-      
-//     console.log("disconnectedd");
-//  });
 
 // ================== ROUTES ==================
 app.get("/",(req,res)=>{
@@ -99,13 +41,15 @@ app.get("/signup",(req,res)=>{
     res.sendFile(path.join(__dirname, 'public/signup/signup.html'))
 })
 
-app.use("/user",userRouter);
+
 app.use("/message",messageRoute);
+app.use("/user",userRouter);
+
 
 // ================== SERVER START ==================
 const PORT = 8000;
 
-sequelize.sync({ alter: false })
+sequelize.sync({ alter:false })
 .then(() => {
     console.log("DB synced");
     server.listen(PORT, () => {
