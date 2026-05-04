@@ -25,8 +25,6 @@ module.exports = (socket, io) => {
   socket.on("join-room", (roomName) => {
     socket.join(roomName);
     console.log("JOIN ROOM:", roomName);
-
-    
     socket.emit("room-joined", roomName);
   });
 
@@ -40,10 +38,12 @@ module.exports = (socket, io) => {
       name: socket.user.name
     };
 
+    console.log(data,"ye personal chat ka hai");
+
     if (roomName) {
       io.to(roomName).emit("message", data); // ✅ personal chat
     } else {
-      io.emit("message", data); // ✅ fallback group
+      io.emit("message", data);
     }
   });
 };

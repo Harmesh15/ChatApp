@@ -12,6 +12,10 @@ const messages = sequelize.define("messages", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    roomName: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false

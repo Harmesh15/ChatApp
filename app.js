@@ -49,7 +49,7 @@ app.use("/user",userRouter);
 // ================== SERVER START ==================
 const PORT = 8000;
 
-sequelize.sync({ alter:false })
+sequelize.sync({ alter:true })
 .then(() => {
     console.log("DB synced");
     server.listen(PORT, () => {
