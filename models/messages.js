@@ -19,6 +19,14 @@ const messages = sequelize.define("messages", {
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    mediaUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    type: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 })
 

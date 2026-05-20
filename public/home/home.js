@@ -7,6 +7,8 @@ const form = document.getElementById("searchForm");
 const createGroupBtn = document.getElementById("createGroupBtn");
 const groupNameInput = document.getElementById("groupNameInput");
 const groupList = document.getElementById("groupList");
+const fileInput = document.getElementById("fileInput");
+
 
 
 const currentId = localStorage.getItem("userId");
@@ -38,17 +40,6 @@ socket.on("new-group", ({ groupId, groupName }) => {
 });
 
 
-// socket.on("group-message", (data) => {
-//     console.log("RECEIVED GROUP MSG:", data);
-//     renderMessage(data);
-// });
-
-// socket.on("message", (data) => {
-//     renderMessage(data);
-// });
-
-
-
 socket.on("group-message", (data) => {
     if (currentChat?.type !== "group") return;  // 🔥 filter
     renderMessage(data);
@@ -60,12 +51,69 @@ socket.on("message", (data) => {
 });
 
 
+// function renderMessage(data) {
+
+//     const messageArea = document.getElementById('messageArea');
+//     const div = document.createElement("div");
+//     console.log("abhi ye object hai item", data)
+//     if (data.userId == currentId) {
+//         div.className = "message sent";
+//     } else {
+//         div.className = "message received";
+//     }
+//     div.innerHTML = `
+//                <p>${data.message}</p>
+//                <span>${data.name}</span> 
+//                 `;
+
+//      if (data.type && data.type.startsWith("image")) {
+
+//         const img = document.createElement("img");
+//         img.src = data.mediaUrl;
+//         img.width = 200;
+//         div.appendChild(img);
+//     }
+
+  
+//     else if (data.type && data.type.startsWith("video")) {
+
+//         const video = document.createElement("video");
+//         video.src = data.mediaUrl;
+//         video.controls = true;
+//         video.width = 250;
+//         div.appendChild(video);
+//     }
+
+//     else if (data.mediaUrl) {
+
+//         const a = document.createElement("a");
+//         a.href = data.mediaUrl;
+//         a.innerText = "Download File";
+//         a.target = "_blank";
+//         div.appendChild(a);
+//     }
+
+//     messageArea.appendChild(div);
+//     setTimeout(() => {
+//         messageArea.scrollTop = messageArea.scrollHeight;
+//     }, 50);
+// }
+
+
+
+// check render function
+
+
+
+
+
 function renderMessage(data) {
 
     const messageArea = document.getElementById('messageArea');
     const div = document.createElement("div");
     console.log("abhi ye object hai item", data)
-    if (data.userId == currentId) {
+    if(!data.chatuser){
+         if (data.userId == currentId) {
         div.className = "message sent";
     } else {
         div.className = "message received";
@@ -75,6 +123,19 @@ function renderMessage(data) {
                <span>${data.name}</span> 
                 `;
 
+    }else{
+        if (data.userId == currentId) {
+        div.className = "message sent";
+    } else {
+        div.className = "message received";
+    }
+    div.innerHTML = `
+               <p>${data.message}</p>
+               <span>${data.chatuser.name}</span> 
+               
+                `;
+    }
+    
      if (data.type && data.type.startsWith("image")) {
 
         const img = document.createElement("img");
@@ -109,9 +170,37 @@ function renderMessage(data) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //////////////// send button event//////////////////////////////////
-
-
 
 sendBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -120,35 +209,35 @@ sendBtn.addEventListener("click", async (e) => {
         alert("Select chatType first");
         return;
     }
-
-    // socket.emit("join-room", window.roomName);
     
     const token = localStorage.getItem('token');
+
     const file = fileInput.files[0];
-      let fileData = "";
-      let url = "";
-      let type = "";
+     let fileData = null;
+     let url = null;
+     let type = null;
+     
      if(file){
        fileData  = await sendFileData();
-       console.log(fileData);
        url = fileData.data.fileUrl;
        type = file.type
-       
+       console.log(fileData);
      }
 
-    console.log("send button hit and media url ",url);
-
     const msg = msgInput.value.trim();
-    if (msg) {
+    console.log("file url is ",url);
+    // if (msg) {
         const response = await axios.post("/message/newmessage", {
             message: msg,
-            roomName: currentChat.id
+            roomName: currentChat.id,
+            mediaUrl:url,
+            type
         }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-    }    
+    // }    
         console.log({
            mediaUrl: url,
            type: type
@@ -179,9 +268,11 @@ sendBtn.addEventListener("click", async (e) => {
 
 })
 
-async function sendFileData() {
 
+// for upload media to s3 bucket 
+async function sendFileData() {
      sendBtn.innerText = "Uploading...";
+
     const file = fileInput.files[0];
     const formData = new FormData();
     formData.append("media", file);
@@ -192,62 +283,6 @@ async function sendFileData() {
     return res;
 
 }
-
-
-
-
-
-
-
-
-
-
-// sendBtn.addEventListener("click", async (e) => {
-//     e.preventDefault();
-
-//     if (!currentChat) {
-//         alert("Select chatType first");
-//         return;
-//     }
-
-//     // socket.emit("join-room", window.roomName);
-
-//     const token = localStorage.getItem('token');
-
-//     console.log("send button hit");
-
-//     const msg = msgInput.value.trim();
-//     if (!msg) return;
-
-//     try {
-//         const response = await axios.post("/message/newmessage", {
-//             message: msg,
-//             roomName: currentChat.id
-//         }, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`
-//             }
-//         });
-
-//         if (currentChat.type === "group") {
-//             socket.emit("group-message", {
-//                 groupId: currentChat.id,
-//                 message: msgInput.value
-//             });
-//         } else {
-//             socket.emit("message", {
-//                 roomName: currentChat.id,
-//                 message: msgInput.value
-//             });
-//         }
-//         console.log("TYPE:", currentChat.type);
-//         msgInput.value = ""; // clear input
-
-//         console.log("msg received", response.data);
-//     } catch (error) {
-//         console.log(error);
-//     }
-// })
 
 
 //////////////////// Load Message /////////////////////////
@@ -263,19 +298,34 @@ async function loadmessage(roomId) {
         const messageArea = document.getElementById('messageArea');
         messageArea.innerHTML = " ";
 
-        response.data.response.forEach((item) => {
+        response.data.response.forEach((data) => {
 
-            const div = document.createElement("div");
-            if (item.userId == currentId) {
-                div.className = "message sent";
-            } else {
-                div.className = "message received";
-            }
-            div.innerHTML = `
-               <p>${item.message}</p>
-               <span>${item.chatuser.name}</span> 
-               `;
-            messageArea.appendChild(div);
+            //  console.log("reload data",item);
+            // const div = document.createElement("div");
+            // if (item.userId == currentId) {
+            //     div.className = "message sent";
+            // } else {
+            //     div.className = "message received";
+            // }
+            // div.innerHTML = `
+            //    <p>${item.message}</p>
+            //    <span>${item.chatuser.name}</span> 
+            //    `;
+            // messageArea.appendChild(div);
+
+
+            renderMessage(data);
+
+
+
+
+
+
+
+
+
+
+
         })
     } catch (error) {
         console.log(error);
@@ -436,65 +486,56 @@ function addGroupToList(groupId, groupName) {
 }
 
 
-// media s3 bucket
 
 
-const fileInput = document.getElementById("fileInput");
+// async function uploadMedia() {
 
-async function uploadMedia() {
+//     const formData = new FormData();
+//     formData.append("media", file);
 
-    const file = fileInput.files[0];
+//     const res = await axios.post("/media/upload",formData);
 
-    const formData = new FormData();
+//     const fileUrl = res.data.fileUrl;
 
-    formData.append("media", file);
-
-    const res = await axios.post(
-        "/media/upload",
-        formData
-    );
-
-    const fileUrl = res.data.fileUrl;
-
-    socket.emit("send_message", {
-        roomName,
-        mediaUrl: fileUrl,
-        sender: userName,
-        type: file.type,
-    });
-}
+//     socket.emit("send_message", {
+//         roomName,
+//         mediaUrl: fileUrl,
+//         sender: userName,
+//         type: file.type,
+//     });
+// }
 
 
 
-socket.on("receive_message", (data) => {
+// socket.on("receive_message", (data) => {
 
-    const div = document.createElement("div");
+//     const div = document.createElement("div");
 
-    if (data.type.startsWith("image")) {
+//     if (data.type.startsWith("image")) {
 
-        div.innerHTML = `
-      <img src="${data.mediaUrl}" width="200"/>
-    `;
+//         div.innerHTML = `
+//       <img src="${data.mediaUrl}" width="200"/>
+//     `;
 
-    } else if (data.type.startsWith("video")) {
+//     } else if (data.type.startsWith("video")) {
 
-        div.innerHTML = `
-      <video controls width="250">
-        <source src="${data.mediaUrl}">
-      </video>
-    `;
+//         div.innerHTML = `
+//       <video controls width="250">
+//         <source src="${data.mediaUrl}">
+//       </video>
+//     `;
 
-    } else {
+//     } else {
 
-        div.innerHTML = `
-      <a href="${data.mediaUrl}" target="_blank">
-        Download File
-      </a>
-    `;
-    }
+//         div.innerHTML = `
+//       <a href="${data.mediaUrl}" target="_blank">
+//         Download File
+//       </a>
+//     `;
+//     }
 
-    messages.appendChild(div);
-});
+//     messages.appendChild(div);
+// });
 
 
 

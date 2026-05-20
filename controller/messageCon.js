@@ -1,18 +1,21 @@
 const { messages, chatusers } = require("../models");
 
+/////////////////// ADD New Messages ///////////////////////////
 
 async function messageReceive(req, res) {
-  const { message, roomName } = req.body;
+  const { message, roomName, mediaUrl, type } = req.body;
 
-  console.log("message receive con hit");
+  console.log("message receive controller hit",req.body);
   try {
 
     const response = await messages.create({
       message,
+      roomName,
       userId: req.user.id,
-      roomName
+      mediaUrl,
+      type
     });
-
+   console.log(response);
     res.status(200).json({ success: true, response });
   } catch (error) {
     console.log(error);
@@ -32,7 +35,9 @@ const loadmessage = async (req, res) => {
     }
 
     const response = await messages.findAll({
+       attributes:['message','mediaUrl','type','userId'],
       where:{roomName:room},
+      
        order: [['createdAt',"ASC"]],
       include: [{
          model:chatusers,
