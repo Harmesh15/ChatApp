@@ -30,10 +30,12 @@ module.exports = (socket, io) => {
 
   socket.on("message", (msg) => {
 
-    const { roomName, message } = msg;
+    const { roomName, message,mediaUrl,type } = msg;
 
     const data = {
       message: message,   // ✅ sirf string
+      mediaUrl:mediaUrl,
+      type:type,
       userId: socket.user.id,
       name: socket.user.name
     };

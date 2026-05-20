@@ -6,7 +6,6 @@ module.exports = (socket, io) => {
     socket.join(groupId);
 
     console.log("Group created:", groupId);
-
     // 🔥 correct syntax
     io.emit("new-group", {
       groupId,
@@ -21,12 +20,14 @@ module.exports = (socket, io) => {
   });
 
   // SEND MESSAGE
-  socket.on("group-message", ({ groupId, message }) => {
+  socket.on("group-message", ({ groupId, message, mediaUrl,type}) => {
 
     const data = {
       message,
       userId: socket.user.id,
-      name: socket.user.name
+      name: socket.user.name,
+      mediaUrl:mediaUrl,
+      type:type
     };
 
     io.to(groupId).emit("group-message", data);

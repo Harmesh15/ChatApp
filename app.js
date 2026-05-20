@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const sequelize = require("./utils/db-connection"); 
@@ -6,6 +7,7 @@ const path = require("path");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 // const chatusers = require("./models/chatusers");s  
+const mediaRoutes = require("./routes/mediaRoutes");
 
 
 const socketIo = require("./socket_io/index")
@@ -15,7 +17,7 @@ const userRouter = require("./routes/loginSignupRot");
 const messageRoute = require("./routes/messagesRot");
 
 
-
+console.log(process.env.IAM_USER_KEY,"to check env file working or not");
 
 const app = express();
 const server = http.createServer(app);
@@ -44,6 +46,7 @@ app.get("/signup",(req,res)=>{
 
 app.use("/message",messageRoute);
 app.use("/user",userRouter);
+app.use("/media", mediaRoutes);
 
 
 // ================== SERVER START ==================

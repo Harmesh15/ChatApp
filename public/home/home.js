@@ -60,22 +60,49 @@ socket.on("message", (data) => {
 });
 
 
-function renderMessage(item) {
+function renderMessage(data) {
+
     const messageArea = document.getElementById('messageArea');
-    // messageArea.innerHTML = " ";
     const div = document.createElement("div");
-    console.log("abhi ye object hai item", item)
-    if (item.userId == currentId) {
+    console.log("abhi ye object hai item", data)
+    if (data.userId == currentId) {
         div.className = "message sent";
     } else {
         div.className = "message received";
     }
     div.innerHTML = `
-               <p>${item.message}</p>
-               <span>${item.name}</span> 
-               `;
-    messageArea.appendChild(div);
+               <p>${data.message}</p>
+               <span>${data.name}</span> 
+                `;
 
+     if (data.type && data.type.startsWith("image")) {
+
+        const img = document.createElement("img");
+        img.src = data.mediaUrl;
+        img.width = 200;
+        div.appendChild(img);
+    }
+
+  
+    else if (data.type && data.type.startsWith("video")) {
+
+        const video = document.createElement("video");
+        video.src = data.mediaUrl;
+        video.controls = true;
+        video.width = 250;
+        div.appendChild(video);
+    }
+
+    else if (data.mediaUrl) {
+
+        const a = document.createElement("a");
+        a.href = data.mediaUrl;
+        a.innerText = "Download File";
+        a.target = "_blank";
+        div.appendChild(a);
+    }
+
+    messageArea.appendChild(div);
     setTimeout(() => {
         messageArea.scrollTop = messageArea.scrollHeight;
     }, 50);
@@ -84,68 +111,160 @@ function renderMessage(item) {
 
 //////////////// send button event//////////////////////////////////
 
+
+
 sendBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-     if (!currentChat) {
+    if (!currentChat) {
         alert("Select chatType first");
         return;
     }
 
     // socket.emit("join-room", window.roomName);
-
+    
     const token = localStorage.getItem('token');
+    const file = fileInput.files[0];
+      let fileData = "";
+      let url = "";
+      let type = "";
+     if(file){
+       fileData  = await sendFileData();
+       console.log(fileData);
+       url = fileData.data.fileUrl;
+       type = file.type
+       
+     }
 
-    console.log("send button hit");
+    console.log("send button hit and media url ",url);
 
     const msg = msgInput.value.trim();
-    if (!msg) return; 
-
-    try {
+    if (msg) {
         const response = await axios.post("/message/newmessage", {
-            message:msg,
-            roomName: currentChat.id  
+            message: msg,
+            roomName: currentChat.id
         }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
+    }    
+        console.log({
+           mediaUrl: url,
+           type: type
+        });
 
         if (currentChat.type === "group") {
             socket.emit("group-message", {
                 groupId: currentChat.id,
-                message: msgInput.value
+                message: msgInput.value,
+                mediaUrl:url,
+                type
             });
         } else {
             socket.emit("message", {
                 roomName: currentChat.id,
-                message: msgInput.value
+                message: msgInput.value,
+                mediaUrl:url,
+                type
             });
         }
         console.log("TYPE:", currentChat.type);
         msgInput.value = ""; // clear input
 
-        console.log("msg received", response.data);
-    } catch (error) {
-        console.log(error);
-    }
+        // console.log("msg received", response.data);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
 })
+
+async function sendFileData() {
+
+     sendBtn.innerText = "Uploading...";
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("media", file);
+    const res = await axios.post("/media/upload", formData);
+
+    fileInput.value = "";
+    sendBtn.innerText = "Send";
+    return res;
+
+}
+
+
+
+
+
+
+
+
+
+
+// sendBtn.addEventListener("click", async (e) => {
+//     e.preventDefault();
+
+//     if (!currentChat) {
+//         alert("Select chatType first");
+//         return;
+//     }
+
+//     // socket.emit("join-room", window.roomName);
+
+//     const token = localStorage.getItem('token');
+
+//     console.log("send button hit");
+
+//     const msg = msgInput.value.trim();
+//     if (!msg) return;
+
+//     try {
+//         const response = await axios.post("/message/newmessage", {
+//             message: msg,
+//             roomName: currentChat.id
+//         }, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+
+//         if (currentChat.type === "group") {
+//             socket.emit("group-message", {
+//                 groupId: currentChat.id,
+//                 message: msgInput.value
+//             });
+//         } else {
+//             socket.emit("message", {
+//                 roomName: currentChat.id,
+//                 message: msgInput.value
+//             });
+//         }
+//         console.log("TYPE:", currentChat.type);
+//         msgInput.value = ""; // clear input
+
+//         console.log("msg received", response.data);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
 
 
 //////////////////// Load Message /////////////////////////
 
- async function loadmessage(roomId){  
+
+async function loadmessage(roomId) {
 
     try {
         // const response = await axios.get("/message/loadmessage");
- 
-    const response = await axios.get(`/message/loadmessage?room=${roomId}`);
+
+        const response = await axios.get(`/message/loadmessage?room=${roomId}`);
 
         const messageArea = document.getElementById('messageArea');
         messageArea.innerHTML = " ";
 
-         response.data.response.forEach((item) => {
-        
+        response.data.response.forEach((item) => {
+
             const div = document.createElement("div");
             if (item.userId == currentId) {
                 div.className = "message sent";
@@ -189,9 +308,9 @@ window.addEventListener("DOMContentLoaded", async (e) => {
           <h4>${item.name}<h4/>
           <P>${item.message}<P/>
        `
-         secList.addEventListener("click", () => {
-         startPrivateChat(item.email);
-    });
+        secList.addEventListener("click", () => {
+            startPrivateChat(item.email);
+        });
 
         secList.appendChild(profileDiv);
         secList.appendChild(userInfoDiv);
@@ -206,13 +325,13 @@ window.addEventListener("DOMContentLoaded", async (e) => {
 
 ////////////////////////// Personal chat function //////////////////////////////
 
-function startPrivateChat(searchEmail){
+function startPrivateChat(searchEmail) {
     console.log("start personalchat function Called");
 
     const myEmail = localStorage.getItem("email");
     const email = searchEmail;
 
-    console.log("myEmail",myEmail,"email",email);
+    console.log("myEmail", myEmail, "email", email);
 
     const roomName = [myEmail, email].sort().join("_");
 
@@ -222,7 +341,7 @@ function startPrivateChat(searchEmail){
 
     socket.emit("join-room", roomName);
 
-     currentChat = {
+    currentChat = {
         type: "private",
         id: roomName
     };
@@ -302,12 +421,12 @@ createGroupBtn.addEventListener("click", () => {
 
 function addGroupToList(groupId, groupName) {
 
-       if (document.getElementById(groupId)) return;
+    if (document.getElementById(groupId)) return;
 
     const li = document.createElement("li");
     li.innerHTML = groupName;
     li.className = "group-item";
-     li.id = groupId;
+    li.id = groupId;
 
     // click pe group open
     li.addEventListener("click", () => {
@@ -315,3 +434,117 @@ function addGroupToList(groupId, groupName) {
     });
     groupList.appendChild(li);
 }
+
+
+// media s3 bucket
+
+
+const fileInput = document.getElementById("fileInput");
+
+async function uploadMedia() {
+
+    const file = fileInput.files[0];
+
+    const formData = new FormData();
+
+    formData.append("media", file);
+
+    const res = await axios.post(
+        "/media/upload",
+        formData
+    );
+
+    const fileUrl = res.data.fileUrl;
+
+    socket.emit("send_message", {
+        roomName,
+        mediaUrl: fileUrl,
+        sender: userName,
+        type: file.type,
+    });
+}
+
+
+
+socket.on("receive_message", (data) => {
+
+    const div = document.createElement("div");
+
+    if (data.type.startsWith("image")) {
+
+        div.innerHTML = `
+      <img src="${data.mediaUrl}" width="200"/>
+    `;
+
+    } else if (data.type.startsWith("video")) {
+
+        div.innerHTML = `
+      <video controls width="250">
+        <source src="${data.mediaUrl}">
+      </video>
+    `;
+
+    } else {
+
+        div.innerHTML = `
+      <a href="${data.mediaUrl}" target="_blank">
+        Download File
+      </a>
+    `;
+    }
+
+    messages.appendChild(div);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////// chek //////////////////////////////////////
+
+
+
+
+
+
+
+// sendBtn.addEventListener("click", async () => {
+
+//     const message = msgInput.value;
+//     let mediaUrl = null;
+//     let type = null;
+
+//     // FILE UPLOAD
+//     if (file) {
+
+//         const formData = new FormData();
+
+//         formData.append("media", file);
+
+//         const res = await axios.post("/media/upload", formData);
+
+//         mediaUrl = res.data.fileUrl;
+//         type = file.type;
+//     }
+
+//     // SOCKET EMIT
+//     socket.emit("send_message", {
+//         roomName: currentRoom,
+//         sender: "Aman",
+//         message,
+//         mediaUrl,
+//         type,
+//     });
+
+//     msgInput.value = "";
+//     fileInput.value = "";
+// });
