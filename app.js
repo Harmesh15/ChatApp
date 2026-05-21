@@ -8,6 +8,8 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 // const chatusers = require("./models/chatusers");s  
 const mediaRoutes = require("./routes/mediaRoutes");
+const archivedChats = require("./models/archived");
+require("./cron/archiveChats");
 
 
 const socketIo = require("./socket_io/index")

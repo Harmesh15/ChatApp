@@ -12,11 +12,13 @@
     "aws-sdk": "^2.1693.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
+    "cron": "^4.4.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "mysql2": "^3.20.0",
+    "node-cron": "^4.2.1",
     "sequelize": "^6.37.8",
     "socket.io": "^4.8.3",
     "ws": "^8.20.0"
